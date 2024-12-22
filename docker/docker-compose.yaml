@@ -1,0 +1,72 @@
+version: '3'
+services:
+  es:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.14.3
+    environment:
+      - node.name=es
+      - discovery.type=single-node
+      - ELASTIC_PASSWORD=1q2w3e
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=false
+      - xpack.license.self_generated.type=basic
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./es-data:/usr/share/elasticsearch/data
+      - ./es-plugins:/usr/share/elasticsearch/plugins
+    ports:
+      - 9200:9200
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.14.3
+    environment:
+      - ELASTICSEARCH_HOSTS=http://es:9200
+      - ELASTICSEARCH_USERNAME=kibana_system
+      - ELASTICSEARCH_PASSWORD=""
+    ports:
+      - 5601:5601
+    depends_on:
+      - es
+
+
+
+
+
+# version: '3.8'
+# services:
+#   elasticsearch:
+#     image: docker.elastic.co/elasticsearch/elasticsearch:8.14.3
+#     container_name: elasticsearch
+#     environment:
+#       - discovery.type=single-node
+#       - ES_JAVA_OPTS=-Xms512m -Xmx512m
+#       - xpack.security.enabled=true
+#       - ELASTIC_PASSWORD=elastic
+#     volumes:
+#       - ./es_data:/usr/share/elasticsearch/data
+#     ports:
+#       - "9200:9200"
+#     networks:
+#       - elk
+
+#   kibana:
+#     image: docker.elastic.co/kibana/kibana:8.14.3
+#     container_name: kibana
+#     environment:
+#       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+#       - ELASTICSEARCH_USERNAME=elastic
+#       - ELASTICSEARCH_PASSWORD=elastic 
+#     depends_on:
+#       - elasticsearch
+#     ports:
+#       - "5601:5601"
+#     networks:
+#       - elk
+
+
+# networks:
+#   elk:
+#     driver: bridge
